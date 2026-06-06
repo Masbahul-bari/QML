@@ -21,6 +21,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
+from qiskit_algorithms.optimizers import SPSA
+
 
 print("=" * 70)
 print("   [QML] FULL QUANTUM ML PIPELINE - ALL ALGORITHMS")
@@ -73,7 +75,7 @@ scaler = MinMaxScaler(feature_range=(0, 1))
 X_scaled = scaler.fit_transform(X_raw)
 
 n_features = X_scaled.shape[1]
-n_qubits = min(n_features, 6)   # keep low for speed
+n_qubits = min(n_features, 8)   # keep low for speed # was 6 
 
 if n_features > n_qubits:
     print(f"   PCA: {n_features} -> {n_qubits} components")
@@ -93,7 +95,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 print(f"   Train: {len(X_train)} | Test: {len(X_test)}")
 
 # Limit training samples for quantum speed
-MAX_TRAIN = min(len(X_train), 60)
+MAX_TRAIN = min(len(X_train), 150)  #was 60
 X_tr = X_train[:MAX_TRAIN]
 y_tr = y_train[:MAX_TRAIN]
 
@@ -125,7 +127,7 @@ except ImportError as e:
 # ─────────────────────────────────────────────
 # Helper: build VQC-based classifier
 # ─────────────────────────────────────────────
-def build_vqc(reps=2):
+def build_vqc(reps=5): #was reps=2
     fm = ZZFeatureMap(feature_dimension=n_qubits, reps=1)
     ans = RealAmplitudes(num_qubits=n_qubits, reps=reps)
     try:
@@ -134,7 +136,12 @@ def build_vqc(reps=2):
     except Exception:
         from qiskit.primitives import Sampler
         s = Sampler()
-    return VQC(sampler=s, feature_map=fm, ansatz=ans, optimizer=None)
+    # Use SPSA optimizer for variational circuits (tunable maxiter)
+    try:
+        opt = SPSA(maxiter=300) #was 100
+    except Exception:
+        opt = None
+    return VQC(sampler=s, feature_map=fm, ansatz=ans, optimizer=opt)
 
 def build_kernel():
     fm = ZZFeatureMap(feature_dimension=n_qubits, reps=2)
