@@ -1,0 +1,32 @@
+QUANTUM ML CLASSIFICATION -- RESULTS
+============================================================
+
+[QML] QUANTUM VQC RESULTS:
+  Accuracy  : 0.4590
+  Precision : 0.4690
+  Recall    : 0.4590
+  F1-Score  : 0.4538
+
+  Confusion Matrix:
+[[12 21]
+ [12 16]]
+
+  Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.50      0.36      0.42        33
+           1       0.43      0.57      0.49        28
+
+    accuracy                           0.46        61
+   macro avg       0.47      0.47      0.46        61
+weighted avg       0.47      0.46      0.45        61
+
+[SVM] CLASSICAL SVM BASELINE:
+  Accuracy  : 0.7869
+  F1-Score  : 0.7872
+
+  Confusion Matrix:
+[[25  8]
+ [ 5 23]]
+
+COMPARISON: QML=0.4590  SVM=0.7869  -> SVM wins
